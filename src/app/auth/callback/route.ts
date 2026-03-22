@@ -26,6 +26,19 @@ export async function GET(request: NextRequest) {
         );
 
         await supabase.auth.exchangeCodeForSession(code);
+
+        // Upsert supervisor record for the authenticated user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await supabase.from('supervisors').upsert(
+                {
+                    auth_user_id: user.id,
+                    full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? '',
+                    company_name: user.user_metadata?.company_name ?? '',
+                },
+                { onConflict: 'auth_user_id' }
+            );
+        }
     }
 
     return response;

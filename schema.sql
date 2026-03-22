@@ -7,6 +7,28 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================================
+-- Table: supervisors
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.supervisors (
+  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  auth_user_id  UUID UNIQUE NOT NULL,
+  full_name     TEXT,
+  company_name  TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE public.supervisors ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "supervisors_select_own" ON public.supervisors
+  FOR SELECT USING (auth_user_id = auth.uid());
+
+CREATE POLICY "supervisors_insert_own" ON public.supervisors
+  FOR INSERT WITH CHECK (auth_user_id = auth.uid());
+
+CREATE POLICY "supervisors_update_own" ON public.supervisors
+  FOR UPDATE USING (auth_user_id = auth.uid());
+
+-- ============================================================
 -- Table: labourers
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.labourers (

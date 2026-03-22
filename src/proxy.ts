@@ -28,6 +28,7 @@ export async function proxy(request: NextRequest) {
     const isPublicRoute =
         pathname.startsWith('/sign-in') ||
         pathname.startsWith('/sign-up') ||
+        pathname.startsWith('/forgot-password') ||
         pathname.startsWith('/auth/') ||
         pathname === '/manifest.webmanifest';
 

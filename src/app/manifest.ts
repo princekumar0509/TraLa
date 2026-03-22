@@ -7,13 +7,18 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'Smart Attendance for Field Teams',
         start_url: '/dashboard',
         display: 'standalone',
-        background_color: '#ffffff',
+        background_color: '#4f46e5',
         theme_color: '#4f46e5',
         icons: [
             {
-                src: '/favicon.ico',
-                sizes: '64x64',
-                type: 'image/x-icon',
+                src: '/icon-192.png',
+                sizes: '192x192',
+                type: 'image/png',
+            },
+            {
+                src: '/icon-512.png',
+                sizes: '512x512',
+                type: 'image/png',
             },
         ],
     };

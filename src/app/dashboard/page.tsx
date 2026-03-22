@@ -51,9 +51,7 @@ export default function DashboardPage() {
                 <div className="max-w-lg mx-auto">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center border border-white/30">
-                                <span className="text-xl">🏗️</span>
-                            </div>
+                            <img src="/logo.svg" alt="TraLa" className="w-10 h-10 rounded-xl" />
                             <span className="text-white font-bold text-lg">{APP_NAME}</span>
                         </div>
                         <div className="flex items-center gap-2">

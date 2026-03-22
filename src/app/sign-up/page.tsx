@@ -95,9 +95,7 @@ export default function SignUpPage() {
         <div className="min-h-dvh bg-gradient-to-br from-indigo-950 via-indigo-900 to-blue-900 flex flex-col items-center justify-center px-4 py-8">
             {/* Logo */}
             <div className="mb-8 text-center">
-                <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-4 border border-white/20 shadow-2xl">
-                    <span className="text-3xl">🏗️</span>
-                </div>
+                <img src="/logo.svg" alt="TraLa" className="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-2xl" />
                 <h1 className="text-2xl font-bold text-white">{APP_NAME}</h1>
                 <p className="text-indigo-300 text-sm mt-1">Smart Attendance for Field Teams</p>
             </div>

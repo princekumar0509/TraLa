@@ -14,6 +14,14 @@ export const metadata: Metadata = {
   description:
     'A mobile-first labour attendance management app for supervisors and contractors. Mark attendance, track wages, and manage your workforce with ease.',
   keywords: ['labour attendance', 'worker management', 'construction attendance', 'site manager'],
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

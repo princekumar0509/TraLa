@@ -9,10 +9,9 @@ import AttendanceCard from '@/components/attendance/AttendanceCard';
 import SaveButton from '@/components/attendance/SaveButton';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import EmptyState from '@/components/ui/EmptyState';
-import PageHeader from '@/components/layout/PageHeader';
 import BottomNav from '@/components/layout/BottomNav';
 import { AttendanceCardSkeleton } from '@/components/ui/LoadingSkeleton';
-import { getISTDate, formatDisplayDate, formatShortDate } from '@/lib/utils';
+import { getISTDate, formatDisplayDate } from '@/lib/utils';
 import { Shift, ShiftEntry } from '@/types';
 import DateInput from '@/components/ui/DateInput';
 import { cn } from '@/lib/utils';
@@ -118,95 +117,83 @@ export default function AttendancePage() {
     };
 
     return (
-        <div className="page-container">
-            <PageHeader
-                title="Mark Attendance"
-                subtitle={selectedDate ? formatShortDate(selectedDate) : ''}
-            />
-
-            {/* Date + Shift Controls */}
-            <div className="px-4 py-3 bg-white border-b border-gray-100 sticky top-[73px] z-20">
-                <div className="max-w-lg mx-auto space-y-3">
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2" htmlFor="attendance-date">
-                            Select Date
-                        </label>
-                        <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 border-2 border-transparent focus-within:border-indigo-300 transition-colors">
-                            <Calendar size={18} className="text-indigo-500 flex-shrink-0" />
-                            <DateInput
-                                id="attendance-date"
-                                value={selectedDate}
-                                onChange={(val) => { if (val <= today) setDate(val); }}
-                                max={today}
-                            />
-                        </div>
+        <div className="flex flex-col max-w-lg mx-auto" style={{ height: 'calc(100dvh - 64px)' }}>
+            {/* FIXED TOP SECTION */}
+            <div className="flex-shrink-0 bg-white border-b border-gray-100 px-4 pt-3 pb-2 z-20">
+                <h1 className="text-lg font-bold text-gray-900">Mark Attendance</h1>
+                {/* Date + Shift row */}
+                <div className="flex gap-2 mt-2">
+                    <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-xl px-3 border-2 border-transparent focus-within:border-indigo-300 transition-colors">
+                        <Calendar size={16} className="text-indigo-500 flex-shrink-0" />
+                        <DateInput
+                            id="attendance-date"
+                            value={selectedDate}
+                            onChange={(val) => { if (val <= today) setDate(val); }}
+                            max={today}
+                            className="py-2 text-sm"
+                        />
                     </div>
-
-                    {/* Shift Toggle */}
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                            Shift
-                        </label>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setShift('day')}
-                                className={cn(
-                                    'flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all duration-200 min-h-[48px]',
-                                    selectedShift === 'day'
-                                        ? 'bg-amber-500 text-white shadow-md shadow-amber-200'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                )}
-                            >
-                                <Sun size={18} />
-                                Day Shift
-                            </button>
-                            <button
-                                onClick={() => setShift('night')}
-                                className={cn(
-                                    'flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all duration-200 min-h-[48px]',
-                                    selectedShift === 'night'
-                                        ? 'bg-indigo-700 text-white shadow-md shadow-indigo-200'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                )}
-                            >
-                                <Moon size={18} />
-                                Night Shift
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Summary pills */}
-                    {markedCount > 0 && (
-                        <div className="flex items-center gap-2">
-                            {presentCount > 0 && (
-                                <span className="flex items-center gap-1.5 text-xs font-medium bg-green-100 text-green-700 px-3 py-1.5 rounded-full">
-                                    <CheckCircle2 size={13} /> {presentCount} Present
-                                </span>
-                            )}
-                            {absentCount > 0 && (
-                                <span className="flex items-center gap-1.5 text-xs font-medium bg-red-100 text-red-600 px-3 py-1.5 rounded-full">
-                                    <XCircle size={13} /> {absentCount} Absent
-                                </span>
-                            )}
-                            {labourers.length - markedCount > 0 && (
-                                <span className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">
-                                    {labourers.length - markedCount} Unmarked
-                                </span>
-                            )}
-                        </div>
-                    )}
-
-                    {isModifying && (
-                        <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2">
-                            <span>⚠️</span>
-                            <span>Attendance already saved for {selectedShift} shift. Changes will overwrite.</span>
-                        </div>
-                    )}
                 </div>
+
+                {/* Shift Toggle */}
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                    <button
+                        onClick={() => setShift('day')}
+                        className={cn(
+                            'flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200',
+                            selectedShift === 'day'
+                                ? 'bg-amber-500 text-white shadow-md shadow-amber-200'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        )}
+                    >
+                        <Sun size={16} />
+                        Day Shift
+                    </button>
+                    <button
+                        onClick={() => setShift('night')}
+                        className={cn(
+                            'flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200',
+                            selectedShift === 'night'
+                                ? 'bg-indigo-700 text-white shadow-md shadow-indigo-200'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        )}
+                    >
+                        <Moon size={16} />
+                        Night Shift
+                    </button>
+                </div>
+
+                {/* Summary pills */}
+                {markedCount > 0 && (
+                    <div className="flex items-center gap-2 mt-2">
+                        {presentCount > 0 && (
+                            <span className="flex items-center gap-1 text-xs font-medium bg-green-100 text-green-700 px-2.5 py-1 rounded-full">
+                                <CheckCircle2 size={12} /> {presentCount}
+                            </span>
+                        )}
+                        {absentCount > 0 && (
+                            <span className="flex items-center gap-1 text-xs font-medium bg-red-100 text-red-600 px-2.5 py-1 rounded-full">
+                                <XCircle size={12} /> {absentCount}
+                            </span>
+                        )}
+                        {labourers.length - markedCount > 0 && (
+                            <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+                                {labourers.length - markedCount} left
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                {isModifying && (
+                    <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2 mt-2">
+                        <span>⚠️</span>
+                        <span>Already saved for {selectedShift} shift. Changes will overwrite.</span>
+                    </div>
+                )}
             </div>
 
-            {/* Content */}
-            <div className="px-4 pt-4 pb-36 max-w-lg mx-auto">
+            {/* SCROLLABLE LABOURER LIST */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 pb-28">
                 {labourersLoading || loadingExisting ? (
                     <div className="space-y-3">
                         {[...Array(4)].map((_, i) => (
@@ -244,7 +231,7 @@ export default function AttendancePage() {
                 )}
             </div>
 
-            {/* Save Button */}
+            {/* FIXED SAVE BUTTON */}
             {labourers.length > 0 && (
                 <SaveButton
                     onClick={handleSave}

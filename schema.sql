@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.labourers (
   phone        TEXT,
   worker_type  TEXT NOT NULL,
   daily_wage   NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  night_hourly_rate NUMERIC(10, 2) DEFAULT NULL,
   is_active    BOOLEAN NOT NULL DEFAULT TRUE,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -68,11 +69,13 @@ CREATE TABLE IF NOT EXISTS public.attendance (
   labour_id    UUID NOT NULL REFERENCES public.labourers (id) ON DELETE CASCADE,
   supervisor_id UUID NOT NULL,
   date         DATE NOT NULL,
+  shift        TEXT NOT NULL DEFAULT 'day' CHECK (shift IN ('day', 'night')),
   status       TEXT NOT NULL CHECK (status IN ('present', 'absent')),
   wage_amount  NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  hours_worked NUMERIC(4, 1) DEFAULT NULL,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT attendance_labour_date_unique UNIQUE (labour_id, date)
+  CONSTRAINT attendance_labour_date_shift_unique UNIQUE (labour_id, date, shift)
 );
 
 CREATE INDEX IF NOT EXISTS idx_attendance_supervisor ON public.attendance (supervisor_id);

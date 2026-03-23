@@ -284,7 +284,6 @@ export default function LabourerProfilePage() {
                     </h3>
                     <AttendanceTimeline
                         records={attendanceRecords}
-                        dailyWage={labourer.daily_wage}
                     />
                 </div>
             </div>

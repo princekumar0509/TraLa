@@ -2,18 +2,33 @@
 
 import { useCallback, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { AttendanceRecord, AttendanceStatus } from '@/types';
+import { AttendanceRecord, AttendanceStatus, Shift } from '@/types';
 import toast from 'react-hot-toast';
+
+export function calculateWage(
+    dailyWage: number,
+    nightHourlyRate: number | null | undefined,
+    shift: Shift,
+    status: AttendanceStatus,
+    hoursWorked?: number
+): number {
+    if (status === 'absent') return 0;
+    if (shift === 'night' && nightHourlyRate && hoursWorked) {
+        return nightHourlyRate * hoursWorked;
+    }
+    return dailyWage;
+}
 
 export function useAttendance() {
     const [loading, setLoading] = useState(false);
 
     const fetchAttendanceForDate = useCallback(
-        async (date: string): Promise<AttendanceRecord[]> => {
+        async (date: string, shift: Shift): Promise<AttendanceRecord[]> => {
             const { data, error } = await supabase
                 .from('attendance')
                 .select('*')
-                .eq('date', date);
+                .eq('date', date)
+                .eq('shift', shift);
 
             if (error) {
                 toast.error('Failed to load attendance');
@@ -24,14 +39,29 @@ export function useAttendance() {
         []
     );
 
+    const fetchAttendanceForDateAllShifts = useCallback(
+        async (date: string): Promise<AttendanceRecord[]> => {
+            const { data, error } = await supabase
+                .from('attendance')
+                .select('*')
+                .eq('date', date);
+
+            if (error) return [];
+            return data || [];
+        },
+        []
+    );
+
     const saveAttendance = useCallback(
         async (
             records: Array<{
                 labour_id: string;
                 status: AttendanceStatus;
-                daily_wage: number;
+                wage_amount: number;
+                hours_worked?: number;
             }>,
-            date: string
+            date: string,
+            shift: Shift
         ) => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');
@@ -42,15 +72,17 @@ export function useAttendance() {
                     labour_id: r.labour_id,
                     supervisor_id: user.id,
                     date,
+                    shift,
                     status: r.status,
-                    wage_amount: r.status === 'present' ? r.daily_wage : 0,
+                    wage_amount: r.wage_amount,
+                    hours_worked: r.hours_worked ?? null,
                     updated_at: new Date().toISOString(),
                 }));
 
                 const { error } = await supabase
                     .from('attendance')
                     .upsert(upsertPayload, {
-                        onConflict: 'labour_id,date',
+                        onConflict: 'labour_id,date,shift',
                     });
 
                 if (error) throw error;
@@ -84,6 +116,7 @@ export function useAttendance() {
     return {
         loading,
         fetchAttendanceForDate,
+        fetchAttendanceForDateAllShifts,
         saveAttendance,
         fetchHistory,
     };

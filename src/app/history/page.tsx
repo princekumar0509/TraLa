@@ -16,6 +16,8 @@ import {
     IndianRupee,
     Users,
     Filter,
+    Sun,
+    Moon,
 } from 'lucide-react';
 import { formatCurrency, formatShortDate, getMonthRange, getISTDate } from '@/lib/utils';
 import DateInput from '@/components/ui/DateInput';
@@ -29,6 +31,7 @@ interface DayEntry {
     total_wage: number;
     records: Array<{
         labour_id: string;
+        shift: string;
         status: string;
         wage_amount: number;
         labourers?: { name: string; worker_type: string };
@@ -241,7 +244,14 @@ export default function HistoryPage() {
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                                                                {record.shift === 'night' ? (
+                                                                    <Moon size={12} className="text-indigo-500 flex-shrink-0" />
+                                                                ) : (
+                                                                    <Sun size={12} className="text-amber-500 flex-shrink-0" />
+                                                                )}
+                                                            </div>
                                                             {workerType && (
                                                                 <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full', WORKER_TYPE_COLORS[workerType as keyof typeof WORKER_TYPE_COLORS] || 'bg-gray-100 text-gray-600')}>
                                                                     {workerType}

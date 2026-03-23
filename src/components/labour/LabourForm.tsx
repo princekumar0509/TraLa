@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { WorkerType, Labourer } from '@/types';
 import { WORKER_TYPES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { IndianRupee, User, Phone, ChevronDown, Loader2 } from 'lucide-react';
+import { IndianRupee, User, Phone, ChevronDown, Loader2, Moon } from 'lucide-react';
 
 interface LabourFormProps {
     initialData?: Partial<Labourer>;
@@ -13,6 +13,7 @@ interface LabourFormProps {
         phone?: string;
         worker_type: WorkerType;
         daily_wage: number;
+        night_hourly_rate?: number;
     }) => Promise<void>;
     submitLabel?: string;
 }
@@ -22,6 +23,7 @@ export default function LabourForm({ initialData, onSubmit, submitLabel = 'Add L
     const [phone, setPhone] = useState(initialData?.phone || '');
     const [workerType, setWorkerType] = useState<WorkerType>(initialData?.worker_type || 'Mason');
     const [dailyWage, setDailyWage] = useState(initialData?.daily_wage?.toString() || '');
+    const [nightHourlyRate, setNightHourlyRate] = useState(initialData?.night_hourly_rate?.toString() || '');
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -47,11 +49,13 @@ export default function LabourForm({ initialData, onSubmit, submitLabel = 'Add L
 
         setLoading(true);
         try {
+            const nightRate = parseFloat(nightHourlyRate);
             await onSubmit({
                 name: name.trim(),
                 phone: phone.replace(/\s/g, '') || undefined,
                 worker_type: workerType,
                 daily_wage: parseFloat(dailyWage),
+                night_hourly_rate: !isNaN(nightRate) && nightRate > 0 ? nightRate : undefined,
             });
         } finally {
             setLoading(false);
@@ -145,6 +149,29 @@ export default function LabourForm({ initialData, onSubmit, submitLabel = 'Add L
                     />
                 </div>
                 {errors.daily_wage && <p className="text-red-500 text-xs mt-1 ml-1">{errors.daily_wage}</p>}
+            </div>
+
+            {/* Night Hourly Rate */}
+            <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="labourer-night-rate">
+                    Night Hourly Rate (₹) <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 border-2 border-transparent focus-within:border-indigo-300 focus-within:bg-white transition-colors">
+                    <Moon size={18} className="text-indigo-400 flex-shrink-0" />
+                    <input
+                        id="labourer-night-rate"
+                        type="number"
+                        value={nightHourlyRate}
+                        onChange={(e) => setNightHourlyRate(e.target.value)}
+                        placeholder="e.g. 80 (leave blank = use daily wage)"
+                        className="flex-1 py-4 bg-transparent text-gray-900 placeholder-gray-400 outline-none text-base"
+                        min="1"
+                        max="9999"
+                        step="1"
+                        inputMode="numeric"
+                    />
+                </div>
+                <p className="text-gray-400 text-xs mt-1 ml-1">If set, night wage = hourly rate × hours worked</p>
             </div>
 
             {/* Submit */}

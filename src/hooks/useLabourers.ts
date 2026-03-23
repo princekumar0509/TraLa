@@ -41,6 +41,7 @@ export function useLabourers() {
             phone?: string;
             worker_type: WorkerType;
             daily_wage: number;
+            night_hourly_rate?: number;
         }) => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error('Not authenticated');
@@ -65,7 +66,7 @@ export function useLabourers() {
     const updateLabourer = useCallback(
         async (
             id: string,
-            data: Partial<Pick<Labourer, 'name' | 'phone' | 'worker_type' | 'daily_wage'>>
+            data: Partial<Pick<Labourer, 'name' | 'phone' | 'worker_type' | 'daily_wage' | 'night_hourly_rate'>>
         ) => {
             const { data: updated, error: err } = await supabase
                 .from('labourers')

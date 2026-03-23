@@ -11,6 +11,7 @@ export type WorkerType =
     | 'Loader';
 
 export type AttendanceStatus = 'present' | 'absent';
+export type Shift = 'day' | 'night';
 
 export interface Labourer {
     id: string;
@@ -19,6 +20,7 @@ export interface Labourer {
     phone?: string;
     worker_type: WorkerType;
     daily_wage: number;
+    night_hourly_rate?: number | null;
     is_active: boolean;
     created_at: string;
     updated_at?: string;
@@ -29,10 +31,17 @@ export interface AttendanceRecord {
     labour_id: string;
     supervisor_id: string;
     date: string;
+    shift: Shift;
     status: AttendanceStatus;
     wage_amount: number;
+    hours_worked?: number | null;
     created_at?: string;
     updated_at?: string;
+}
+
+export interface ShiftEntry {
+    status: AttendanceStatus | null;
+    hours_worked?: number;
 }
 
 export interface DailySummary {

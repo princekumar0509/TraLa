@@ -1,22 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { APP_NAME } from '@/lib/constants';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export default function SignInPage() {
-    const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [googleLoading, setGoogleLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleGoogleSignIn = async () => {
-        setGoogleLoading(true);
+        setLoading(true);
         setError('');
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
@@ -24,51 +18,29 @@ export default function SignInPage() {
         });
         if (error) {
             setError(error.message);
-            setGoogleLoading(false);
-        }
-    };
-
-    const handleEmailSignIn = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!email.trim() || !password) return;
-
-        setLoading(true);
-        setError('');
-        const { error } = await supabase.auth.signInWithPassword({
-            email: email.trim(),
-            password,
-        });
-        if (error) {
-            setError(error.message);
             setLoading(false);
-        } else {
-            router.push('/dashboard');
         }
     };
 
     return (
         <div className="min-h-dvh bg-gradient-to-br from-indigo-950 via-indigo-900 to-blue-900 flex flex-col items-center justify-center px-4 py-8">
-            {/* Logo */}
-            <div className="mb-8 text-center">
-                <img src="/logo.svg" alt="TraLa" className="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-2xl" />
-                <h1 className="text-2xl font-bold text-white">{APP_NAME}</h1>
-                <p className="text-indigo-300 text-sm mt-1">Smart Attendance for Field Teams</p>
-            </div>
-
-            <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-white/10 p-6 space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 text-center">Sign In</h2>
+            <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl p-8 text-center">
+                {/* Logo */}
+                <img src="/logo.svg" alt="TraLa" className="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-lg" />
+                <h1 className="text-2xl font-bold text-gray-900">{APP_NAME}</h1>
+                <p className="text-gray-500 text-sm mt-1 mb-8">Smart Attendance for Field Teams</p>
 
                 {error && (
-                    <p className="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2 text-center">{error}</p>
+                    <p className="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2 mb-4">{error}</p>
                 )}
 
-                {/* Google OAuth */}
+                {/* Single Google button */}
                 <button
                     onClick={handleGoogleSignIn}
-                    disabled={googleLoading || loading}
-                    className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors min-h-[48px] disabled:opacity-50"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors min-h-[52px] disabled:opacity-50"
                 >
-                    {googleLoading ? (
+                    {loading ? (
                         <Loader2 size={20} className="animate-spin" />
                     ) : (
                         <svg width="20" height="20" viewBox="0 0 24 24">
@@ -80,63 +52,6 @@ export default function SignInPage() {
                     )}
                     Continue with Google
                 </button>
-
-                <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px bg-gray-200" />
-                    <span className="text-xs text-gray-400 font-medium">or</span>
-                    <div className="flex-1 h-px bg-gray-200" />
-                </div>
-
-                {/* Email / Password */}
-                <form onSubmit={handleEmailSignIn} className="space-y-3">
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 border-2 border-transparent focus-within:border-indigo-300 focus-within:bg-white transition-colors">
-                        <Mail size={18} className="text-gray-400 flex-shrink-0" />
-                        <input
-                            type="email"
-                            placeholder="Email address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            autoComplete="email"
-                            className="flex-1 py-3 bg-transparent text-gray-900 placeholder-gray-400 outline-none text-base"
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 border-2 border-transparent focus-within:border-indigo-300 focus-within:bg-white transition-colors">
-                        <Lock size={18} className="text-gray-400 flex-shrink-0" />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            autoComplete="current-password"
-                            className="flex-1 py-3 bg-transparent text-gray-900 placeholder-gray-400 outline-none text-base"
-                        />
-                    </div>
-
-                    <div className="text-right">
-                        <Link href="/forgot-password" className="text-sm text-indigo-600 font-medium hover:text-indigo-700">
-                            Forgot password?
-                        </Link>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading || googleLoading}
-                        className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold min-h-[48px] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                        {loading && <Loader2 size={18} className="animate-spin" />}
-                        {loading ? 'Signing in...' : 'Sign In'}
-                    </button>
-                </form>
-
-                <p className="text-sm text-gray-500 text-center">
-                    Don&apos;t have an account?{' '}
-                    <Link href="/sign-up" className="text-indigo-600 font-semibold hover:text-indigo-700">
-                        Sign Up
-                    </Link>
-                </p>
             </div>
         </div>
     );

@@ -27,8 +27,6 @@ export async function proxy(request: NextRequest) {
 
     const isPublicRoute =
         pathname.startsWith('/sign-in') ||
-        pathname.startsWith('/sign-up') ||
-        pathname.startsWith('/forgot-password') ||
         pathname.startsWith('/auth/') ||
         pathname === '/manifest.webmanifest';
 
@@ -36,7 +34,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/sign-in', request.url));
     }
 
-    if (session && (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up'))) {
+    if (session && pathname.startsWith('/sign-in')) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
